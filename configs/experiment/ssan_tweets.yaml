@@ -1,0 +1,40 @@
+# @package _global_
+
+defaults:
+  - override /data: tweets
+  - override /model: ssan_bilstm  
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: wandb
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["ssan", "tweets"]
+
+seed: 1000
+
+trainer:
+  min_epochs: 1
+  max_epochs: 35  # 增加训练轮数，配合更强的正则化
+  gradient_clip_val: 1.0  # 梯度裁剪
+  gradient_clip_algorithm: "norm"
+  accumulate_grad_batches: 2  # 梯度累积，减少batch size的负面影响
+  val_check_interval: 1.0  # 每个epoch验证一次
+  check_val_every_n_epoch: 1  # 每个epoch验证一次
+
+model:
+  dataset_name: "tweets"  # 设置数据集名称用于类别权重
+  optimizer:
+    lr: 2e-5  # 调整学习率到2e-5
+
+data:
+  batch_size: 16  # 减小batch size增强正则化效果
+  num_workers: 6
+  
+logger:
+  wandb:
+    project: "absa-ssan"
+    name: "ssan_tweets"
+    group: "tweets"
+    tags: ${tags}

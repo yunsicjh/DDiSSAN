@@ -1,0 +1,64 @@
+
+_target_: src.models.ssanlitmodule.SSANLitModule
+
+# 模型基础参数
+bert_model_name: "bert-base-uncased"
+dep_embed_dim: 30
+num_heads: 8
+num_classes: 3
+
+# 参数初始化
+init_enable: true                    # 是否启用参数初始化
+init_method: "xavier"               # 初始化方法：uniform, xavier, kaiming
+init_range: 0.1                      # 均匀分布范围 [-0.1, 0.1]（仅用于 uniform）
+init_exclude_pretrained: true        # 是否排除预训练BERT权重
+
+# 图注意力类型选择
+graph_attention_type: "hybrid"  # "differential" 或 "hybrid"
+
+# BiLSTM参数 - 固定768→128维度，增强正则化
+bilstm_hidden_dim: 128
+bilstm_num_layers: 1
+bilstm_dropout: 0.3  # 从0.3增加到0.5，增强正则化
+
+# 跨模态注意力参数 - 增强dropout
+cross_modal_layers: 1
+cross_modal_dropout: 0.3  # 从0.1增加到0.3
+
+# 正则化参数 - 显著增强
+classifier_dropout: 0.3  # 从0.4增加到0.6
+use_layer_norm: true
+
+# 新增正则化参数
+token_aggregator_dropout: 0.3  # Token聚合层dropout
+bert_dropout: 0.1  # BERT层dropout
+gradient_clip_val: 1.0  # 梯度裁剪
+label_smoothing: 0.01  # 标签平滑从0.1增加到0.15
+
+# 类别不平衡处理参数
+use_class_weights: true    # 启用类别权重
+use_focal_loss: true       # 启用Focal Loss 
+use_mixed_loss: true       # 启用混合损失策略 (最高优先级)
+focal_alpha: 1.5           # Focal Loss alpha参数
+focal_gamma: 2.5           # Focal Loss gamma参数
+mixed_loss_weights: [0.5, 0.3, 0.2]  # [focal, weighted_ce, label_smooth]
+neutral_boost: 0.3         # neutral类额外关注系数 (0.0=不启用, 0.3-0.5=推荐值)
+dataset_name: "restaurants" # 数据集名称，用于自动设置权重
+
+# 优化器配置 - 调整学习率提升训练效率
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 2e-5  # 调整到2e-5，提升训练效率
+  weight_decay: 0.25  # 从0.15增加到0.25，更强的权重衰减
+  betas: [0.9, 0.999]
+  eps: 1e-8
+
+# 学习率调度器 - 更温和的调度
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  _partial_: true
+  T_0: 5  # 从3增加到5，更长的周期
+  T_mult: 2
+  eta_min: 1e-9  # 更低的最小学习率
+
