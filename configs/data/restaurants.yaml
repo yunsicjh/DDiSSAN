@@ -1,0 +1,8 @@
+_target_: src.data.absa_datamodule.ABSADataModule
+data_dir: ${paths.data_dir}/Restaurants_corenlp  # 原始json数据目录
+vocab_dir: ${paths.data_dir}/Restaurants_corenlp  # 词表目录
+bert_model_name: bert-base-uncased
+max_len: 128
+batch_size: 32
+num_workers: 0
+pin_memory: False
