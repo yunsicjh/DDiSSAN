@@ -12,7 +12,8 @@
 
 ## Description
 
-Dynamic Differential Syntax-Semantic Attention Network for Implicit Aspect-Based Sentiment Analysis.(We will release the core code once the paper is accepted.
+A Differential Syntax–Semantic Learning Framework for Robust Aspect-Based Sentiment
+Analysis.(We will release the core code once the paper is accepted.
 )
 
 ## Installation
